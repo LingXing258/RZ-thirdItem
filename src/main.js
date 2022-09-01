@@ -4,4 +4,9 @@ import router from './router'
 import store from './store'
 import 'normalize.css/normalize.css'
 import 'lib-flexible/flexible'
-createApp(App).use(store).use(router).mount('#app')
+import vant from 'vant'
+import 'vant/lib/index.css'
+import VueClipboard from 'vue-clipboard2'
+import '@/style/icon/app.scss'
+import '@/assets/font.scss'
+const app=createApp(App).use(store).use(router).use(vant).use(VueClipboard).mount('#app')
