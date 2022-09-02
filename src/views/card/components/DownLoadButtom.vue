@@ -1,9 +1,11 @@
 <template>
-   <div class="footer-box"  @touchstart="longTimeTouch" id="down">
+  <a :href="'wtai://wp/ap;'+tel+';'">
+   <div class="footer-box" id="down">
       <div class="footer-box-buttom" >
-        <a>保存名片</a><i class="iconfont">&#xe8b0;</i>
+        保存名片<i class="iconfont">&#xe8b0;</i>
       </div>
     </div>
+  </a>
 </template>
 
 <script>
@@ -19,6 +21,11 @@ export default {
   created () {
     this.recentCardRef()
   },
+  props: {
+    tel: {
+      type: String
+    }
+  },
   methods: {
     recentCardRef () {
       const that = this
@@ -28,20 +35,21 @@ export default {
       })
     },
     longTimeTouch () {
-      html2canvas(this.recentcardRef, {
-        useCORS: true, // 允许跨域
-        backgroundColor: 'rgba(0,0,0,0)', // 或者null，都代表透明
-        scale: window.devicePixelRatio,
-        dpi: 300,
-        color: '#fffff',
-        logging: false
-      //   width: this.$refs.card.offsetWidth,
-      //   height: this.$refs.card.offsetHeight,
-      }).then(canvas => {
-        const myBlob = this.dataURLtoBlob(canvas.toDataURL('img/png'))
-        const myUrl = URL.createObjectURL(myBlob)
-        this.downImg(myUrl) // 创建a标签，下载图片
-      })
+      window.location.href = 'wtai://wp/ap;' + this.tel
+      // html2canvas(this.recentcardRef, {
+      //   useCORS: true, // 允许跨域
+      //   backgroundColor: 'rgba(0,0,0,0)', // 或者null，都代表透明
+      //   scale: window.devicePixelRatio,
+      //   dpi: 300,
+      //   color: '#fffff',
+      //   logging: false
+      // //   width: this.$refs.card.offsetWidth,
+      // //   height: this.$refs.card.offsetHeight,
+      // }).then(canvas => {
+      //   const myBlob = this.dataURLtoBlob(canvas.toDataURL('img/png'))
+      //   const myUrl = URL.createObjectURL(myBlob)
+      //   this.downImg(myUrl) // 创建a标签，下载图片
+      // })
     },
     dataURLtoBlob (dataurl) {
       const arr = dataurl.split(','); const mime = arr[0].match(/:(.*?);/)[1]; const bstr = atob(arr[1]); let n = bstr.length; const u8arr = new Uint8Array(n)

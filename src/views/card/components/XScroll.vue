@@ -2,7 +2,7 @@
   <div class="x-scrllo-box">
       <div class="x-scrllo-box-inner">
 
-      <div class="x-scrllo-box-inner-item"  @click="copy( userkey.userTelKey,userIn.companyTel)" ref="item">
+      <div class="x-scrllo-box-inner-item"  @click="copy( userkey.userTelKey,userIn.userTel)" ref="item">
        <div class="content-top"><i class="iconfont" >&#x100bd;</i><div >联系电话&nbsp;</div></div>
        <div class="content-bottom">{{userIn.userTel || '&nbsp;'}}</div>
       </div>
@@ -12,9 +12,9 @@
        <div class="content-bottom">{{userIn.companyEmail || '&nbsp;'}}</div>
       </div>
 
-       <div class="x-scrllo-box-inner-item"  @click="copy(userkey.userIntelKey,userIn.companyInternet)" ref="item">
+       <div class="x-scrllo-box-inner-item"  @click="copy(userkey.userIntelKey,userIn.companyUrl)" ref="item">
        <div class="content-top"><i class="iconfont">&#xe61f;</i><div >网址&nbsp;</div></div>
-       <div class="content-bottom">{{userIn.companyInternet || '&nbsp;'}}</div>
+       <div class="content-bottom">{{userIn.companyUrl || '&nbsp;'}}</div>
       </div>
 
       <div class="x-scrllo-box-inner-item"  @click="copy(userkey.userAddressKey,userIn.companyAddress)" ref="item">
@@ -27,41 +27,41 @@
 </template>
 
 <script>
-    export default {
-      name: 'App',
-      data () {
-        return {
-          userkey:{
-            userTelKey:'联系电话',
-            userEmailKey:'邮箱',
-            userIntelKey:'网址',
-            userAddressKey:'地址',
-          }
-        }
-      },
-      methods: {
-    async copy(name,value) {
-        this.show=true;
-        try {
-         await this.$dialog.confirm({title:name , message: value })
-            const success  = await this.$copyText(value)
-            if(success) {
-               this.$toast.success('复制成功')
-            }else {
-                this.$toast('复制失败')
-            }
-        }catch(e){
-            console.log(e)
-          }
-        }
-      },
-      props:{
-        userIn:{
-          type:Object
-        }
+export default {
+  name: 'App',
+  data () {
+    return {
+      userkey: {
+        userTelKey: '联系电话',
+        userEmailKey: '邮箱',
+        userIntelKey: '网址',
+        userAddressKey: '地址'
       }
     }
-    </script>
+  },
+  methods: {
+    async copy (name, value) {
+      this.show = true
+      try {
+        await this.$dialog.confirm({ title: name, message: value })
+        const success = await this.$copyText(value)
+        if (success) {
+          this.$toast.success('复制成功')
+        } else {
+          this.$toast('复制失败')
+        }
+      } catch (e) {
+        console.log(e)
+      }
+    }
+  },
+  props: {
+    userIn: {
+      type: Object
+    }
+  }
+}
+</script>
 
 <style lang="scss" scoped>
  .x-scrllo-box {

@@ -5,10 +5,10 @@
           <div class="card-header-left">
             <div class="card-header-left-top">
               <div class="card-header-left-top-left">
-                <strong>{{userIn.userName}}</strong>
+                <strong>{{userInfo.userName}}</strong>
              </div>
              <div class="card-header-left-top-right">
-                 <p>{{userIn.userPosition}}</p>
+                 <p>{{userInfo.userPosition}}</p>
              </div>
            </div>
           <div class="card-header-left-bottom">
@@ -16,30 +16,30 @@
           </div>
         </div>
          <div class="card-header-right">
-           <img src="@/assets/logoWithEnglish.jpg" alt="">
+           <img src="@/assets/logo.jpg" alt="">
         </div>
         </div>
         <div class="card-body">
           <div class="card-body-company-name">
-           <p>{{userIn.companyName}}</p>
+           <p>{{userInfo.companyName}}</p>
         </div>
          <div class="card-body-company-list">
          <div class="card-body-company-list-item-address" >
-          <p><span>地址:</span>&nbsp;{{userIn.companyAddress}}</p>
+          <p><span>地址:</span>&nbsp;{{userInfo.companyAddress}}</p>
          </div>
          <div class="card-body-company-list-item">
           <div class="card-body-company-list-item-tel space">
-           <p> <span>电话:</span>&nbsp;<span class="text-indent">{{userIn.companyTel}}</span></p>
+           <p> <span>电话:</span>&nbsp;<span class="text-indent">{{userInfo.companyTel}}</span></p>
           </div>
           <div class="card-body-company-list-item-fax space">
-           <p> <span>传真:</span>&nbsp;<span class="text-indent">{{userIn.companyFax}}</span></p>
+           <p> <span>传真:</span>&nbsp;<span class="text-indent">{{userInfo.companyFax}}</span></p>
          </div>
          </div>
          <div class="card-body-company-list-item-email space">
-          <p><span class="sigin">E-mail:</span>&nbsp;{{userIn.companyEmail}}</p>
+          <p><span class="sigin">E-mail:</span>&nbsp;{{userInfo.companyEmail}}</p>
         </div>
         <div class="card-body-company-list-item-inter space">
-           {{userIn.companyInternet}}
+           {{userInfo.companyUrl}}
        </div>
         </div>
         </div>
@@ -47,7 +47,7 @@
         <div class="card-footer-enlarge" ref="qrcodeenlarge"></div>
         <div class="card-bottom-arrow"></div>
       </div>
-    </div> 
+    </div>
 </template>
 
 <script>
@@ -56,141 +56,148 @@ import QRCode from 'qrcodejs2'
 import { ImagePreview } from 'vant'
 import emitter from '@/utils/mitt.js'
 export default {
-    name: 'App',
+  name: 'App',
   data () {
     return {
       imgurl: '',
-      imglist:[],
+      imglist: [],
       cardSrc: '',
-      cardList:[],
+      cardList: []
     }
   },
   created () {
     // this.getUserInfo()
   },
-  props:{
-    userIn:{
-      typeof:Object
+  props: {
+    userInfo: {
+      typeof: Object
     }
   },
   mounted () {
-    this.createQrCode()
-    this.createQrCodeEnlarge()
-    this.getCardRef()
+    this.loadQrcode()
+    //this.getCardRef()
   },
   computed: {
+
     gaptelephone: function () {
-      if (!this.userIn.userTel) {
+      if (!this.userInfo.userTel) {
         return undefined
       } else {
-        const phoneReg = (/^(0[0-9]{2,3}-)?([2-9][0-9]{6,7})+(-[0-9]{1,4})?$/) //固定电话
-        if (!(phoneReg.test(this.userIn.userTel))) {
-          const handleTele = (this.userIn.userTel).replace(/^(.{3})(.{3})(.{3})(.*)$/, '$1 $2 $3 $4') //手机号处理
+        const phoneReg = (/^(0[0-9]{2,3}-)?([2-9][0-9]{6,7})+(-[0-9]{1,4})?$/) // 固定电话
+        if (!(phoneReg.test(this.userInfo.userTel))) {
+          const handleTele = (this.userInfo.userTel).replace(/^(.{3})(.{3})(.{3})(.*)$/, '$1 $2 $3 $4') // 手机号处理
           console.log(handleTele)
           return handleTele
         } else {
-          console.log(this.userIn.userTel)
-          return this.userIn.userTel
+          console.log(this.userInfo.userTel)
+          return this.userInfo.userTel
         }
       }
     }
   },
   methods: {
-    getCardRef(){
-        emitter.emit('CardRef',this.$refs.card)
+    getCardRef () {
+      emitter.emit('CardRef', this.$refs.card)
+    },
+    loadQrcode() {
+      if (this.userInfo.companyInternet) {
+        this.createQrCode()
+        this.createQrCodeEnlarge()
+        return
+      }
+      const _this = this
+      setTimeout(function () {
+        _this.loadQrcode()
+      }, 500)
     },
     toucherQrcode () {
       this.preventEventDoing = true
       this.imglist = []
       this.imglist.push(this.src)
-       this.width=100
-       this.height=100
+      this.width = 100
+      this.height = 100
       ImagePreview({
         images: this.imglist,
         showIndicators: false,
         showIndex: false,
         closeable: true,
         closeIconPosition: 'top-right',
-        onClose:this.scale
+        onClose: this.scale
       })
     },
-    createQrCodeEnlarge() {
-      const userurl = 'userIn.companyInternet'
-      let width = 1000
-      let height = 1000
+    createQrCodeEnlarge () {
+      const userurl = this.userInfo.companyInternet || ''
+      const width = 1000
+      const height = 1000
       const qrcodeConfig = {
         text: userurl,
         // colorDark: '#333333', //二维码颜色
         // colorLight: '#ffffff', //二维码背景色
-        width:width,
-        height:height,
+        width: width,
+        height: height,
         // mSize: 0.3,
         // iconSrc:'@/assets/logo.png',
-        correctLevel: QRCode.CorrectLevel.H  //容错率，L/M/H,
+        correctLevel: QRCode.CorrectLevel.H // 容错率，L/M/H,
       }
       const qrcode = new QRCode(this.$refs.qrcodeenlarge, qrcodeConfig)
-      this.src =qrcode._oDrawing._elCanvas.toDataURL('image/png')
+      this.src = qrcode._oDrawing._elCanvas.toDataURL('image/png')
     },
     createQrCode () {
-      const userurl = 'userIn.companyInternet'
-      let width = 42
-      let height = 42
+      const userurl = this.userInfo.companyInternet || ''
+      console.log(userurl)
+      const width = 42
+      const height = 42
       const qrcodeConfig = {
         text: userurl,
         // colorDark: '#333333', //二维码颜色
         // colorLight: '#ffffff', //二维码背景色
-        width:width,
-        height:height,
-        correctLevel: QRCode.CorrectLevel.H  //容错率，L/M/H,
+        width: width,
+        height: height,
+        correctLevel: QRCode.CorrectLevel.H // 容错率，L/M/H,
       }
-      const qrcode = new QRCode(this.$refs.qrcode, qrcodeConfig)
+      new QRCode(this.$refs.qrcode, qrcodeConfig)
     },
     dataURLtoBlob (dataurl) {
-     let arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1], bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+      const arr = dataurl.split(','); const mime = arr[0].match(/:(.*?);/)[1]; const bstr = atob(arr[1]); let n = bstr.length; const u8arr = new Uint8Array(n)
 
-    while (n--) {
+      while (n--) {
+        u8arr[n] = bstr.charCodeAt(n)
+      }
 
-     u8arr[n] = bstr.charCodeAt(n);
+      return new Blob([u8arr], { type: mime })
+    },
+    downImg (url) {
+      // 创建a标签 并设置其相关属性，最后触发其点击事件
+      // let b= document.getElementById('img')
+      // b.src=url
+      //      console.log(img1)
+      const timestamp = Date.now().toString()
+      const a = document.createElement('a')
 
-  }
+      // let clickEvent = document.createEvent("MouseEvents");
 
-  return new Blob([u8arr], { type: mime });
+      const clickEvent = document.createEvent('MouseEvents')
+      a.setAttribute('href', url)
+      a.setAttribute('id', 'aId')
+      a.setAttribute('download', `${timestamp}.png`)
 
-},
-    downImg(url){
+      a.setAttribute('target', '_blank')
 
-  // 创建a标签 并设置其相关属性，最后触发其点击事件
-  // let b= document.getElementById('img')
-  // b.src=url
-    //      console.log(img1)
-   const timestamp = Date.now().toString();
-  var a = document.createElement("a")
+      clickEvent.initEvent('click', true, true)
 
-  // let clickEvent = document.createEvent("MouseEvents");
-  
-  let clickEvent = document.createEvent("MouseEvents");
-  a.setAttribute("href", url)
-  a.setAttribute('id','aId')
-  a.setAttribute("download", `${timestamp}.png`)
-
-  a.setAttribute("target", '_blank')
-
-  clickEvent.initEvent('click', true, true)
-
-  a.dispatchEvent(clickEvent);
-  
-},
-    async copy(name,value) {
-    this.show=true;
-    try {
-     await this.$dialog.confirm({ title: name, message: value })
-        const success  = await this.$copyText(value)
-        if(success) {
-           this.$toast.success('复制成功')
-        }else {
-            this.$toast('复制失败')
+      a.dispatchEvent(clickEvent)
+    },
+    async copy (name, value) {
+      this.show = true
+      try {
+        await this.$dialog.confirm({ title: name, message: value })
+        const success = await this.$copyText(value)
+        if (success) {
+          this.$toast.success('复制成功')
+        } else {
+          this.$toast('复制失败')
         }
-    }catch(e){
+      } catch (e) {
         console.log(e)
       }
     }
